@@ -1,10 +1,7 @@
 import pytest
 from babel import Locale
 
-from app.core.entities import Quiz
-from app.core.services.quiz import QuizService
-
-from ..repository.memory import MemoryRepository
+from app.core import Quiz, QuizService, Repository
 
 pytestmark = pytest.mark.asyncio
 
@@ -22,8 +19,7 @@ TEST_USER = {
 }
 
 
-async def test_list_quizzes():
-    repo = MemoryRepository()
+async def test_list_quizzes(repo: Repository):
     service = QuizService(repo)
 
     quizzes_au = set()
@@ -76,21 +72,20 @@ async def test_list_quizzes():
     assert len(set(received_quizzes_a + received_quizzes_b)) == 2
 
 
-async def test_submit_answers():
-    repo = MemoryRepository()
+async def test_submit_answers(repo: Repository):
     service = QuizService(repo)
 
     user = await repo.create_user(**TEST_USER)
     quiz = await repo.create_quiz(**TEST_QUIZ)
 
     question1 = await repo.create_quiz_question(
-        quiz, "Which city is the capital of Great Britain?"
+        quiz.id, "Which city is the capital of Great Britain?"
     )
-    answer1 = await repo.create_quiz_answer(question1, "London", True)
+    answer1 = await repo.create_quiz_answer(question1.id, "London", True)
     question2 = await repo.create_quiz_question(
-        quiz, "Which city is the capital of Japan?"
+        quiz.id, "Which city is the capital of Japan?"
     )
-    answer2 = await repo.create_quiz_answer(question2, "Rome", False)
+    answer2 = await repo.create_quiz_answer(question2.id, "Rome", False)
 
     user, session = await service.submit_answers(
         user.id, quiz.id, [answer1.id, answer2.id]

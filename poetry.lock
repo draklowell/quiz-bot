@@ -1,4 +1,15 @@
 [[package]]
+name = "aiosqlite"
+version = "0.17.0"
+description = "asyncio bridge to the standard sqlite3 module"
+category = "main"
+optional = false
+python-versions = ">=3.6"
+
+[package.dependencies]
+typing_extensions = ">=3.7.2"
+
+[[package]]
 name = "atomicwrites"
 version = "1.4.1"
 description = "Atomic file writes."
@@ -256,16 +267,20 @@ python-versions = ">=3.7"
 name = "typing-extensions"
 version = "4.3.0"
 description = "Backported and Experimental Type Hints for Python 3.7+"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.7"
 
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "2bf549da3d3ec9276c927ad18b1d13384f02b9882b9154e53d1c2e7d3d6298c1"
+content-hash = "50377ba47304df702a3811d8be5bce5c2ee1c6fdff1677090ea2ad9462f638b6"
 
 [metadata.files]
+aiosqlite = [
+    {file = "aiosqlite-0.17.0-py3-none-any.whl", hash = "sha256:6c49dc6d3405929b1d08eeccc72306d3677503cc5e5e43771efc1e00232e8231"},
+    {file = "aiosqlite-0.17.0.tar.gz", hash = "sha256:f0e6acc24bc4864149267ac82fb46dfb3be4455f99fe21df82609cc6e6baee51"},
+]
 atomicwrites = [
     {file = "atomicwrites-1.4.1.tar.gz", hash = "sha256:81b2c9071a49367a7f770170e5eec8cb66567cfbbc8c73d20ce5ca4a8d71cf11"},
 ]

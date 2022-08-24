@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import List, Optional, Union
+from typing import Iterable, Optional, Union
 
 from babel import Locale
 
@@ -58,11 +58,11 @@ class Repository(ABC):
         pass
 
     @abstractmethod
-    async def get_user(self, id: int) -> Optional[UserModel]:
+    async def get_user(self, user_id: int) -> Optional[UserModel]:
         """
         Get user by id
 
-        :param id: user id ( not telegram id)
+        :param user_id: user id ( not telegram id )
         :return: user or None if not found
         """
         pass
@@ -94,55 +94,28 @@ class Repository(ABC):
         :param first_name:
         :param last_name:
         :param username:
-        :return: user
+        :return: created user
         """
         pass
 
     @abstractmethod
-    async def set_user_language(self, user: UserModel, language: Locale) -> UserModel:
+    async def update_user(
+        self,
+        user_id: int,
+        language: Union[Locale, object] = object,
+        first_name: Union[str, object] = object,
+        last_name: Union[str, None, object] = object,
+        username: Union[str, None, object] = object,
+    ):
         """
-        Update user language
+        Update user ( use :class:`object` if not used )
 
-        :param user: old user
+        :param user_id:
         :param language:
-        :return: updated user
-        """
-        pass
-
-    @abstractmethod
-    async def set_user_first_name(self, user: UserModel, first_name: str) -> UserModel:
-        """
-        Update user first name
-
-        :param user: old user
         :param first_name:
-        :return: updated user
-        """
-        pass
-
-    @abstractmethod
-    async def set_user_last_name(
-        self, user: UserModel, last_name: Union[str, None]
-    ) -> UserModel:
-        """
-        Update user last name
-
-        :param user: old user
         :param last_name:
-        :return: updated user
-        """
-        pass
-
-    @abstractmethod
-    async def set_user_username(
-        self, user: UserModel, username: Union[str, None]
-    ) -> UserModel:
-        """
-        Update user username
-
-        :param user: old user
         :param username:
-        :return: updated user
+        :return:
         """
         pass
 
@@ -161,8 +134,8 @@ class Repository(ABC):
         self,
         language: Locale,
         offset: Optional[int] = 0,
-        limit: Optional[int] = None,
-    ) -> List[QuizModel]:
+        limit: Optional[int] = 100,
+    ) -> Iterable[QuizModel]:
         """
         List quizzes by supported language
 
@@ -216,12 +189,12 @@ class Repository(ABC):
 
     @abstractmethod
     async def create_quiz_question(
-        self, quiz: QuizModel, question: str
+        self, quiz_id: int, question: str
     ) -> QuizQuestionModel:
         """
         Create quiz question
 
-        :param quiz:
+        :param quiz_id:
         :param question:
         :return: created quiz question
         """
@@ -229,12 +202,12 @@ class Repository(ABC):
 
     @abstractmethod
     async def create_quiz_answer(
-        self, question: QuizQuestionModel, value: str, right: bool
+        self, question_id: int, value: str, right: bool
     ) -> QuizAnswerModel:
         """
         Create quiz answer
 
-        :param question:
+        :param question_id:
         :param value:
         :param right:
         :return: created quiz answer
@@ -243,25 +216,31 @@ class Repository(ABC):
 
     @abstractmethod
     async def create_quiz_session(
-        self, user: UserModel, quiz: QuizModel
+        self, user_id: int, quiz_id: int, description: str, language: Locale
     ) -> QuizSessionModel:
         """
         Create quiz session
 
-        :param user:
-        :param quiz:
+        :param user_id:
+        :param quiz_id:
+        :description:
+        :language:
         :return: created quiz session
         """
         pass
 
     @abstractmethod
     async def create_quiz_session_answer(
-        self, session: QuizSessionModel, answer: QuizAnswerModel
+        self, session_id: int, answer_id: int, question: str, answer: str, right: bool
     ) -> QuizSessionAnswerModel:
         """
         Add answer to quiz session
 
-        :param quiz:
+        :param session_id:
+        :param answer_id:
+        :param question:
+        :param answer:
+        :param right:
         :return: created quiz session answer
         """
         pass

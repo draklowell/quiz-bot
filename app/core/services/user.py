@@ -30,7 +30,7 @@ class UserService:
         :return: created or updated user
         """
         async with self.repo.transaction():
-            user = await self.repo.get_user_by_telegram_id(telegram_id)
+            user = await self.repo.get_user_by_telegram_id(telegram_id=telegram_id)
             if not user:
                 user = await self.repo.create_user(
                     telegram_id,
@@ -40,16 +40,19 @@ class UserService:
                     username=username,
                 )
             else:
-                user = await self.repo.set_user_language(user, language)
-                user = await self.repo.set_user_first_name(user, first_name)
-                user = await self.repo.set_user_last_name(user, last_name)
-                user = await self.repo.set_user_username(user, username)
+                await self.repo.update_user(
+                    user_id=user.id,
+                    first_name=first_name,
+                    last_name=last_name,
+                    username=username,
+                    language=language,
+                )
 
             return User(
                 id=user.id,
                 telegram_id=user.telegram_id,
-                first_name=user.first_name,
-                last_name=user.last_name,
-                username=user.username,
-                language=user.language,
+                first_name=first_name,
+                last_name=last_name,
+                username=username,
+                language=language,
             )

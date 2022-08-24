@@ -1,10 +1,7 @@
 import pytest
 from babel import Locale
 
-from app.core.entities import User
-from app.core.services.user import UserService
-
-from ..repository.memory import MemoryRepository
+from app.core import Repository, User, UserService
 
 pytestmark = pytest.mark.asyncio
 
@@ -17,8 +14,7 @@ TEST_USER = {
 }
 
 
-async def test_resolve_user():
-    repo = MemoryRepository()
+async def test_resolve_user(repo: Repository):
     service = UserService(repo)
 
     user = User(1, **TEST_USER)

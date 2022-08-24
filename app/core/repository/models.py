@@ -35,12 +35,19 @@ class QuizSessionModel:
     quiz_id: Optional[int]
     user_id: int
 
+    description: str
+    language: Locale
+
 
 @dataclass(frozen=True)
 class QuizSessionAnswerModel:
     id: int
-    answer_id: int
+    answer_id: Optional[int]
     session_id: int
+
+    question: str
+    answer: str
+    right: bool
 
 
 @dataclass(frozen=True)

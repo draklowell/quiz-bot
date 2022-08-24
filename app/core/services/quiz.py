@@ -32,58 +32,68 @@ class QuizService:
         :return: updated user and created session
         """
         async with self.repo.transaction():
-            user = await self.repo.get_user(user_id)
+            user = await self.repo.get_user(user_id=user_id)
             if user is None:
                 raise UserNotFoundError(id=user_id)
 
-            quiz = await self.repo.get_quiz(quiz_id)
+            quiz = await self.repo.get_quiz(quiz_id=quiz_id)
             if quiz is None:
                 raise QuizNotFoundError(id=quiz_id)
 
-            quiz_session = await self.repo.create_quiz_session(user, quiz)
+            quiz_session = await self.repo.create_quiz_session(
+                user_id=user_id,
+                quiz_id=quiz_id,
+                description=quiz.description,
+                language=quiz.language,
+            )
 
             answers = []
 
             for answer_id in answer_ids:
-                quiz_answer = await self.repo.get_quiz_answer(answer_id)
+                quiz_answer = await self.repo.get_quiz_answer(answer_id=answer_id)
                 if quiz_answer is None:
                     raise QuizAnswerNotFoundError(id=answer_id)
 
                 quiz_question = await self.repo.get_quiz_question(
-                    quiz_answer.question_id
+                    question_id=quiz_answer.question_id
                 )
                 if quiz_question is None:
                     raise QuizAnswerNotFoundError(id=answer_id)
 
                 quiz_session_answer = await self.repo.create_quiz_session_answer(
-                    quiz_session, quiz_answer
+                    session_id=quiz_session.id,
+                    answer_id=quiz_answer.id,
+                    question=quiz_question.question,
+                    answer=quiz_answer.value,
+                    right=quiz_answer.right,
                 )
 
                 answers.append(
                     QuizSessionAnswer(
                         id=quiz_session_answer.id,
-                        question=quiz_question.question,
-                        answer=quiz_answer.value,
-                        right=quiz_answer.right,
+                        question=quiz_session_answer.question,
+                        answer=quiz_session_answer.answer,
+                        right=quiz_session_answer.right,
                     )
                 )
 
-            user = await self.repo.get_user(user.id)
-
-            return user, QuizSession(
-                id=quiz_session.id,
-                description=quiz.description,
-                language=quiz.language,
-                answers=answers,
-                user=user,
-                quiz=quiz,
+            return (
+                user,
+                QuizSession(
+                    id=quiz_session.id,
+                    description=quiz_session.description,
+                    language=quiz_session.language,
+                    answers=answers,
+                    user=user,
+                    quiz=quiz,
+                ),
             )
 
     async def list_quizzes(
         self,
         language: Optional[Locale] = None,
         offset: Optional[int] = 0,
-        limit: Optional[int] = None,
+        limit: Optional[int] = 100,
     ) -> Tuple[int, List[Quiz]]:
         """
         List quizzes for specific region

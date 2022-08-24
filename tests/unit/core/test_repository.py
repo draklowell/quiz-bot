@@ -1,12 +1,15 @@
 import pytest
 
-from .memory import MemoryRepository
+from app.contrib import MemoryRepository
 
 pytestmark = pytest.mark.asyncio
 
 
 async def test_transaction():
     class Mock(MemoryRepository):
+        def __init__(self) -> None:
+            pass
+
         async def begin_transaction(self):
             nonlocal begun
             begun = True
